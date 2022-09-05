@@ -286,8 +286,20 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
             pingsReceived = true;
         }, "");
     }
-    public void OnCustomAuthenticationResponse(Dictionary<string, object> response) { }
-    public void OnCustomAuthenticationFailed(string failure) { }
+    public void OnCustomAuthenticationResponse(Dictionary<string, object> response) {
+        Debug.Log("[PHOTON] Auth Successful!");
+        PlayerPrefs.SetString("id", PhotonNetwork.AuthValues.UserId);
+        if (response.ContainsKey("Token"))
+            PlayerPrefs.SetString("token", (string)response["Token"]);
+        PlayerPrefs.Save();
+
+        GlobalController.Instance.authenticated = true;
+    }
+    public void OnCustomAuthenticationFailed(string failure)
+    {
+        Debug.Log("[PHOTON] Auth Failure: " + failure);
+        OpenErrorBox(failure);
+    }
     public void OnConnectedToMaster() {
         JoinMainLobby();
 
@@ -426,17 +438,18 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         //Photon stuff.
         if (!PhotonNetwork.IsConnected) {
             OpenTitleScreen();
-            PhotonNetwork.NetworkingClient.AppId = "ce540834-2db9-40b5-a311-e58be39e726a";
+
+            //PhotonNetwork.NetworkingClient.AppId = "ce540834-2db9-40b5-a311-e58be39e726a";
+            PhotonNetwork.NetworkingClient.AppId = "40c2f241-79f7-4721-bdac-3c0366d00f58";
 
             //version separation
             Match match = Regex.Match(Application.version, "^\\w*\\.\\w*\\.\\w*");
             PhotonNetwork.NetworkingClient.AppVersion = match.Groups[0].Value;
 
             string id = PlayerPrefs.GetString("id", null);
-            if (id != null)
-                PhotonNetwork.AuthValues = new() { UserId = id };
+            string token = PlayerPrefs.GetString("token", null);
 
-            PhotonNetwork.NetworkingClient.ConnectToNameServer();
+            AuthenticationHandler.Authenticate(id, token);
         } else {
             if (PhotonNetwork.InRoom) {
                 EnterRoom();
