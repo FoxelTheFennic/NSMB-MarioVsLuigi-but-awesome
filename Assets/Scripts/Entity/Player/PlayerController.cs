@@ -9,6 +9,7 @@ using TMPro;
 using Photon.Pun;
 using ExitGames.Client.Photon;
 using NSMB.Utils;
+using static UnityEngine.InputSystem.InputAction;
 
 public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSerializeView, IOnPhotonViewPreNetDestroy {
 
@@ -236,12 +237,18 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         Utils.GetCustomProperty(Enums.NetRoomProperties.Lives, out lives);
 
         if (photonView.IsMine) {
+#if UNITY_ANDROID
+            GameManager.Instance.controlRun.stateChange += OnPowerupAction;
+            GameManager.Instance.controlRun.stateChange += OnSprint;
+            GameManager.Instance.controlJump.stateChange += OnJump;
+#else
             InputSystem.controls.Player.Movement.performed += OnMovement;
             InputSystem.controls.Player.Jump.performed += OnJump;
             InputSystem.controls.Player.Sprint.started += OnSprint;
             InputSystem.controls.Player.Sprint.canceled += OnSprint;
             InputSystem.controls.Player.PowerupAction.performed += OnPowerupAction;
             InputSystem.controls.Player.ReserveItem.performed += OnReserveItem;
+#endif
         }
 
         GameManager.Instance.allPlayers.Add(this);
@@ -264,12 +271,14 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (!photonView.IsMine)
             return;
 
-        InputSystem.controls.Player.Movement.performed -= OnMovement;
-        InputSystem.controls.Player.Jump.performed -= OnJump;
-        InputSystem.controls.Player.Sprint.started -= OnSprint;
-        InputSystem.controls.Player.Sprint.canceled -= OnSprint;
-        InputSystem.controls.Player.PowerupAction.performed -= OnPowerupAction;
-        InputSystem.controls.Player.ReserveItem.performed -= OnReserveItem;
+#if !UNITY_ANDROID
+            InputSystem.controls.Player.Movement.performed -= OnMovement;
+            InputSystem.controls.Player.Jump.performed -= OnJump;
+            InputSystem.controls.Player.Sprint.started -= OnSprint;
+            InputSystem.controls.Player.Sprint.canceled -= OnSprint;
+            InputSystem.controls.Player.PowerupAction.performed -= OnPowerupAction;
+            InputSystem.controls.Player.ReserveItem.performed -= OnReserveItem;
+#endif
     }
 
     public void OnGameStart() {
@@ -331,6 +340,17 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             return;
         }
 
+        #if UNITY_ANDROID
+        // android stuff
+        if (photonView.IsMine)
+        {
+            joystick = new Vector2(
+                (GameManager.Instance.controlLeft.pressed ? -1 : 0) + (GameManager.Instance.controlRight.pressed ? 1 : 0),
+                (GameManager.Instance.controlUp.pressed ? 1 : 0) + (GameManager.Instance.controlDown.pressed ? -1 : 0)
+            );
+        }
+        #endif
+
         previousOnGround = onGround;
         if (!dead && !pipeEntering) {
             HandleBlockSnapping();
@@ -353,9 +373,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         previousFrameVelocity = body.velocity;
         previousFramePosition = body.position;
     }
-    #endregion
+#endregion
 
-    #region -- COLLISIONS --
+#region -- COLLISIONS --
 
     void HandleCoins()
     {
@@ -733,9 +753,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (collider.CompareTag("spinner"))
             onSpinner = null;
     }
-    #endregion
+#endregion
 
-    #region -- CONTROLLER FUNCTIONS --
+#region -- CONTROLLER FUNCTIONS --
     public void OnMovement(InputAction.CallbackContext context) {
         if (!photonView.IsMine || GameManager.Instance.paused)
             return;
@@ -744,31 +764,47 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
 
     public void OnJump(InputAction.CallbackContext context) {
+        OnJump(context.ReadValue<float>() >= 0.5f);
+    }
+
+    public void OnJump(bool jumpHeld)
+    {
         if (!photonView.IsMine || GameManager.Instance.paused)
             return;
 
-        jumpHeld = context.ReadValue<float>() >= 0.5f;
+        this.jumpHeld = jumpHeld;
+
         if (jumpHeld)
             jumpBuffer = 0.15f;
     }
 
     public void OnSprint(InputAction.CallbackContext context) {
+
+        OnSprint(context.started);
+    }
+
+    public void OnSprint(bool running)
+    {
         if (!photonView.IsMine || GameManager.Instance.paused)
             return;
 
-        running = context.started;
-
         if (Frozen)
             return;
+
+        this.running = running;
 
         if (running && GlobalController.Instance.settings.fireballFromSprint)
             ActivatePowerupAction();
     }
 
     public void OnPowerupAction(InputAction.CallbackContext context) {
+        OnPowerupAction(context.ReadValue<float>() >= 0.5f);
+    }
+
+    public void OnPowerupAction(bool powerupButtonHeld)
+    {
         if (!photonView.IsMine || dead || GameManager.Instance.paused)
             return;
-        powerupButtonHeld = context.ReadValue<float>() >= 0.5f;
         if (!powerupButtonHeld)
             return;
 
@@ -909,20 +945,25 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         usedPropellerThisJump = true;
     }
 
-    public void OnReserveItem(InputAction.CallbackContext context) {
+    public void OnReserveItem(bool reserved)
+    {
         if (!photonView.IsMine || GameManager.Instance.paused || GameManager.Instance.gameover)
             return;
 
-        if (storedPowerup == null || dead || !spawned) {
+        if (storedPowerup == null || dead || !spawned)
+        {
             PlaySound(Enums.Sounds.UI_Error);
             return;
         }
 
         SpawnReserveItem();
     }
-    #endregion
+    public void OnReserveItem(InputAction.CallbackContext context) {
+        OnReserveItem(true);
+    }
+#endregion
 
-    #region -- POWERUP / POWERDOWN --
+#region -- POWERUP / POWERDOWN --
     [PunRPC]
     protected void Powerup(int actor, PhotonMessageInfo info) {
         PhotonView view;
@@ -1092,9 +1133,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             PlaySound(Enums.Sounds.Player_Sound_Powerdown);
         }
     }
-    #endregion
+#endregion
 
-    #region -- FREEZING --
+#region -- FREEZING --
     [PunRPC]
     public void Freeze(int cube) {
         if (knockback || hitInvincibilityCounter > 0 || invincible > 0 || Frozen || state == Enums.PowerupState.MegaMushroom)
@@ -1140,9 +1181,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         else
             hitInvincibilityCounter = 1.5f;
     }
-    #endregion
+#endregion
 
-    #region -- COIN / STAR COLLECTION --
+#region -- COIN / STAR COLLECTION --
     [PunRPC]
     protected void CollectBigStar(int starID) {
         PhotonView view = PhotonView.Find(starID);
@@ -1268,9 +1309,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         starDirection = (starDirection + 1) % 4;
     }
-    #endregion
+#endregion
 
-    #region -- DEATH / RESPAWNING --
+#region -- DEATH / RESPAWNING --
     [PunRPC]
     protected void Death(bool deathplane, bool fire) {
         if (dead)
@@ -1406,9 +1447,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         UpdateGameState();
     }
-    #endregion
+#endregion
 
-    #region -- SOUNDS / PARTICLES --
+#region -- SOUNDS / PARTICLES --
     [PunRPC]
     public void PlaySoundEverywhere(Enums.Sounds sound) {
         GameManager.Instance.sfx.PlayOneShot(sound.GetClip(character));
@@ -1466,9 +1507,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         PlaySound(footstepSound, (byte) (step ? 1 : 2), Mathf.Abs(body.velocity.x) / (runningMaxSpeed + 4));
         step = !step;
     }
-    #endregion
+#endregion
 
-    #region -- TILE COLLISIONS --
+#region -- TILE COLLISIONS --
     void HandleGiantTiles(bool pipes)
     {
         if (state != Enums.PowerupState.MegaMushroom || !photonView.IsMine || giantStartTimer > 0)
@@ -1572,9 +1613,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         return 0;
     }
-    #endregion
+#endregion
 
-    #region -- KNOCKBACK --
+#region -- KNOCKBACK --
 
     [PunRPC]
     protected void Knockback(bool fromRight, int starsToDrop, bool fireball, int attackerView) {
@@ -1657,9 +1698,9 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         body.velocity = new(0, body.velocity.y);
         facingRight = initialKnockbackFacingRight;
     }
-    #endregion
+#endregion
 
-    #region -- ENTITY HOLDING --
+#region -- ENTITY HOLDING --
     [PunRPC]
     protected void HoldingWakeup(PhotonMessageInfo info) {
         holding = null;
@@ -1701,7 +1742,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         holdingOld = v.GetComponent<HoldableEntity>();
         throwInvincibility = 0.15f;
     }
-    #endregion
+#endregion
 
     void HandleSliding(bool up, bool down) {
         startedSliding = false;
@@ -1824,7 +1865,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         return false;
     }
 
-    #region -- PIPES --
+#region -- PIPES --
 
     void DownwardsPipeCheck() {
         if (!photonView.IsMine || joystick.y > -analogDeadzone || state == Enums.PowerupState.MegaMushroom || !onGround || knockback || inShell)
@@ -1937,7 +1978,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             break;
         }
     }
-    #endregion
+#endregion
 
     void HandleCrouching(bool crouchInput) {
         if (!photonView.IsMine || sliding || propeller || knockback)

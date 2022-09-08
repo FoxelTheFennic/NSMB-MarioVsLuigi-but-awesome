@@ -73,6 +73,8 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
     private GameObject[] coins;
     public SpectationManager SpectationManager { get; private set; }
 
+    public AndroidControl controlLeft, controlRight, controlUp, controlDown, controlJump, controlRun;
+
     ParticleSystem brickBreak;
 
 

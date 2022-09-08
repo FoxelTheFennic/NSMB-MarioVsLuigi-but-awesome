@@ -42,6 +42,8 @@ public class SettingButtonManager : MonoBehaviour {
     }
 
     public void OnFullscreenToggle(Toggle toggle) {
+        #if !UNITY_ANDROID
+   
         bool value = toggle.isOn;
 
         if (value) {
@@ -51,9 +53,10 @@ public class SettingButtonManager : MonoBehaviour {
         } else {
             Screen.SetResolution(prevWidth, prevHeight, FullScreenMode.Windowed);
         }
+        #endif
     }
 
-        public void OnVsyncToggle(Toggle toggle) {
+    public void OnVsyncToggle(Toggle toggle) {
         Settings settings = Settings.Instance;
         settings.vsync = toggle.isOn;
         QualitySettings.vSyncCount = toggle.isOn ? 1 : 0;
