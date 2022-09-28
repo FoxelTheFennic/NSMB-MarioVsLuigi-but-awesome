@@ -238,10 +238,12 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         if (photonView.IsMine) {
 #if UNITY_ANDROID
+            GameManager.Instance.androidUI.SetActive(true);
             GameManager.Instance.controlRun.stateChange += OnPowerupAction;
             GameManager.Instance.controlRun.stateChange += OnSprint;
             GameManager.Instance.controlJump.stateChange += OnJump;
 #else
+            GameManager.Instance.androidUI.SetActive(false);
             InputSystem.controls.Player.Movement.performed += OnMovement;
             InputSystem.controls.Player.Jump.performed += OnJump;
             InputSystem.controls.Player.Sprint.started += OnSprint;
@@ -340,7 +342,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             return;
         }
 
-        #if UNITY_ANDROID
+#if UNITY_ANDROID
         // android stuff
         if (photonView.IsMine)
         {
@@ -349,7 +351,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
                 (GameManager.Instance.controlUp.pressed ? 1 : 0) + (GameManager.Instance.controlDown.pressed ? -1 : 0)
             );
         }
-        #endif
+#endif
 
         previousOnGround = onGround;
         if (!dead && !pipeEntering) {

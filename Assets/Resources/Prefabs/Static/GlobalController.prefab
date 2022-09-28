@@ -239,12 +239,14 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 083779ae7bd92ab4295d580d757b328e, type: 2}
   - {fileID: 11400000, guid: 886aca9cb64077a4daf88f1a93c3805f, type: 2}
   - {fileID: 11400000, guid: d2b0eea6f8c51304ab2f9eac67fb79b8, type: 2}
+  - {fileID: 11400000, guid: 103e8464bb965f641bab655a96899aa6, type: 2}
   - {fileID: 11400000, guid: 417b5a43a0bba18479f6a24763bb4125, type: 2}
   settings: {fileID: 0}
   discordController: {fileID: 0}
   controlsJson: 
   joinedAsSpectator: 0
   checkedForVersion: 0
+  authenticated: 0
 --- !u!114 &1776850482587567144
 MonoBehaviour:
   m_ObjectHideFlags: 0

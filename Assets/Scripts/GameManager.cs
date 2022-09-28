@@ -74,6 +74,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
     public SpectationManager SpectationManager { get; private set; }
 
     public AndroidControl controlLeft, controlRight, controlUp, controlDown, controlJump, controlRun;
+    public GameObject androidUI;
 
     ParticleSystem brickBreak;
 
