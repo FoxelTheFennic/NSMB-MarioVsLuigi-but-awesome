@@ -8,7 +8,16 @@ public class EnemySpawnpoint : MonoBehaviour {
 
     public virtual bool AttemptSpawning() {
         if (currentEntity)
-            return false;
+        {
+            var entityControllerThing = currentEntity.GetComponent<KillableEntity>();
+            if (entityControllerThing != null && entityControllerThing.dead)
+            {
+                PhotonNetwork.Destroy(currentEntity);
+            } else
+            {
+                return false;
+            }
+        }
 
         foreach (var hit in Physics2D.OverlapCircleAll(transform.position, 1.5f)) {
             if (hit.gameObject.CompareTag("Player"))
