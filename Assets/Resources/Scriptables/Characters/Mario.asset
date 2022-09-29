@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d06d6d68827b8e4ea85daa354fc2aef, type: 3}
   m_Name: Mario
   m_EditorClassIdentifier: 
+  characterName: Mario
   soundFolder: mario
   prefab: PlayerMario
   uistring: <sprite=3>

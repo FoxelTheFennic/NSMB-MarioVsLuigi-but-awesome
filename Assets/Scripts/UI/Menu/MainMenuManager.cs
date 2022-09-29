@@ -570,6 +570,13 @@ public class MainMenuManager : MonoBehaviour, ILobbyCallbacks, IInRoomCallbacks,
         }
 
         OpenInLobbyMenu();
+
+        // refresh levels
+        characterDropdown.ClearOptions();
+        List<string> characters = new List<string>();
+        foreach(PlayerData character in GlobalController.Instance.characters)
+            characters.Add(character.characterName);
+        characterDropdown.AddOptions(characters);
         characterDropdown.SetValueWithoutNotify(Utils.GetCharacterIndex());
 
         if (PhotonNetwork.IsMasterClient)
