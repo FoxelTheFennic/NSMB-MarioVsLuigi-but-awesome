@@ -772,6 +772,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Shrek
       m_Image: {fileID: 0}
+    - m_Text: Niko Bellic
+      m_Image: {fileID: 0}
     - m_Text: Basalt
       m_Image: {fileID: 0}
   m_OnValueChanged:
