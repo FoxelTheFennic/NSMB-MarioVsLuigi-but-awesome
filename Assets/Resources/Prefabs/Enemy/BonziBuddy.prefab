@@ -23,6 +23,8 @@ GameObject:
   - component: {fileID: 902954096586121819}
   - component: {fileID: -3964062451811810513}
   - component: {fileID: 2352995687103707036}
+  - component: {fileID: 3714548657438817424}
+  - component: {fileID: 4162074457774063107}
   m_Layer: 9
   m_Name: BonziBuddy
   m_TagString: goomba
@@ -245,12 +247,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e996f15526c6efc41a2844bb5666b6ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soundRange: 12
+  soundRange: 16
   maxVolume: 1
-  type: 0
+  type: 2
   soundOrigin: {fileID: 7523289063499453456}
   audioSources:
-  - {fileID: 0}
+  - {fileID: 4162074457774063107}
 --- !u!114 &8698039766182409506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,6 +334,127 @@ MonoBehaviour:
   min: -15
   max: 15
   speed: 0.25
+--- !u!114 &3714548657438817424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523289063499453450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f99aea76f031b644d8f6df77d66c13eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timer: 0
+  dead: 0
+  didDeathSequence: 0
+  audioSource: {fileID: 4162074457774063107}
+  audioClips:
+  - {fileID: 8300000, guid: 462381fd78c3b2e4c82e376388948912, type: 3}
+  - {fileID: 8300000, guid: edb93eb6867df0e409550dbaa59bc2d2, type: 3}
+  - {fileID: 8300000, guid: 7ed49280347c4824dbfcae0e5e4d71ce, type: 3}
+  - {fileID: 8300000, guid: 0b8b5d61a12029b479a0a4a86e8e4ef7, type: 3}
+  - {fileID: 8300000, guid: c5359ca7dd5244d48a1ba831ec003d03, type: 3}
+  - {fileID: 8300000, guid: 286e976cd04ca82479f50e263709d04b, type: 3}
+  - {fileID: 8300000, guid: e46767a963ff26d43b309d3dfe1d42cc, type: 3}
+  deathSFX: {fileID: 8300000, guid: f9e954106fe2be94b96896b8eb63ccba, type: 3}
+--- !u!82 &4162074457774063107
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7523289063499453450}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7523289063554791230
 GameObject:
   m_ObjectHideFlags: 0

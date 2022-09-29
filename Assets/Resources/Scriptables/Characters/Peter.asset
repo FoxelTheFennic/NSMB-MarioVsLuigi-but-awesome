@@ -15,7 +15,7 @@ MonoBehaviour:
   characterName: Peter
   soundFolder: peter
   prefab: PlayerPeter
-  uistring: <sprite=50>
+  uistring: <sprite=51>
   loadingSmallSprite: {fileID: 0}
   loadingBigSprite: {fileID: 0}
   readySprite: {fileID: 1116833592, guid: 70672da71d9d71a4daaf5f3fc58531e6, type: 3}
